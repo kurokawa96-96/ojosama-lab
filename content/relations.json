@@ -1,0 +1,8 @@
+{
+  "relations": [
+    { "source": "ojosama-center", "target": "history", "type": "node-node" },
+    { "source": "ojosama-center", "target": "culture", "type": "node-node" },
+    { "source": "ojosama-center", "target": "thought", "type": "node-node" },
+    { "source": "ojosama-center", "target": "etc", "type": "node-node" }
+  ]
+}
