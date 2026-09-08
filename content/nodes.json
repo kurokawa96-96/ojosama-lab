@@ -1,0 +1,34 @@
+{
+  "nodes": [
+    {
+      "id": "ojosama-center",
+      "label": "お嬢様",
+      "type": "center",
+      "isMainNode": true
+    },
+    {
+      "id": "history",
+      "label": "歴史",
+      "type": "category",
+      "isMainNode": true
+    },
+    {
+      "id": "culture",
+      "label": "文化",
+      "type": "category",
+      "isMainNode": true
+    },
+    {
+      "id": "thought",
+      "label": "社会・思想",
+      "type": "category",
+      "isMainNode": true
+    },
+    {
+      "id": "etc",
+      "label": "その他の研究",
+      "type": "etc-collector",
+      "isMainNode": true
+    }
+  ]
+}
