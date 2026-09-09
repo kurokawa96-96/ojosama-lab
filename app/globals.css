@@ -1,0 +1,70 @@
+:root {
+  /* ベースカラー */
+  --color-bg: #fdfbf7;           /* 生成り背景 */
+  --color-bg-paper: #f7f4ee;     /* 資料室・古書調の背景 */
+  --color-text: #2b2926;         /* 黒に近い濃いグレー */
+  --color-text-muted: #6b6660;   /* 補助テキスト */
+  --color-border: #e3ddd2;       /* 薄いボーダー */
+
+  /* アクセント（朱・深いローズ） */
+  --color-accent: #a13d3d;       /* 朱色 */
+  --color-accent-rose: #8c4a52;  /* 深いローズ */
+  --color-seal: #b3372e;         /* 落款の朱色 */
+
+  /* オープニング演出専用（本体トーンとは独立管理） */
+  --color-opening-petal: #f5c6cf;
+  --color-opening-petal-light: #fbe6ea;
+
+  /* タイポグラフィ */
+  --font-serif-jp: "Noto Serif JP", serif;
+  --font-serif-en: "EB Garamond", "Cormorant", serif;
+
+  /* 余白の基準単位 */
+  --space-unit: 8px;
+  --line-height-body: 1.9;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--color-bg);
+}
+
+body {
+  color: var(--color-text);
+  font-family: var(--font-serif-jp);
+  line-height: var(--line-height-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif-jp);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 静かなフェード用の共通クラス */
+.fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 落款の演出：文章の後の余白→落款 */
+.seal-container {
+  margin-top: calc(var(--space-unit) * 8);
+  display: flex;
+  justify-content: center;
+}
