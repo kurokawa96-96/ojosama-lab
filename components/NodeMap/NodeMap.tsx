@@ -112,11 +112,12 @@ export default function NodeMap() {
   });
 
   const handleNodeClick = useCallback(
-    (_: unknown, node: FlowNode) => {
-      setSelectedId((prev) => (prev === node.id ? null : node.id));
-    },
-    []
-  );
+  (_: unknown, node: FlowNode) => {
+    console.log("node clicked:", node.id);
+    setSelectedId((prev) => (prev === node.id ? null : node.id));
+  },
+  []
+);
 
   const handlePaneClick = useCallback(() => {
     setSelectedId(null);
