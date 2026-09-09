@@ -5,14 +5,16 @@ import { Handle, Position } from "reactflow";
 export default function OjosamaNode({
   data,
 }: {
-  data: { label: string; isCenter?: boolean };
+  data: { label: string; isCenter?: boolean; selected?: boolean };
 }) {
   return (
     <div
       style={{
         padding: data.isCenter ? "24px 32px" : "16px 24px",
         borderRadius: "50%",
-        border: `1px solid var(--color-border)`,
+        border: `1px solid ${
+          data.selected ? "var(--color-accent)" : "var(--color-border)"
+        }`,
         background: "var(--color-bg)",
         color: "var(--color-text)",
         fontFamily: "var(--font-serif-jp)",
@@ -23,7 +25,7 @@ export default function OjosamaNode({
         boxShadow: data.isCenter
           ? "0 0 0 1px var(--color-accent)"
           : "none",
-        transition: "opacity 0.4s ease, border-color 0.4s ease",
+        transition: "border-color 0.4s ease",
       }}
     >
       <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
