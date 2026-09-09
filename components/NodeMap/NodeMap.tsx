@@ -102,6 +102,7 @@ export default function NodeMap() {
       e.target === selectedId;
     return {
       ...e,
+      type: "straight",
       style: {
         stroke: active ? "var(--color-accent)" : "var(--color-border)",
         strokeWidth: active && selectedId ? 1.5 : 1,
