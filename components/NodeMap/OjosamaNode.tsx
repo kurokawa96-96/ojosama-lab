@@ -12,7 +12,7 @@ export default function OjosamaNode({
       style={{
         padding: data.isCenter ? "24px 32px" : "16px 24px",
         borderRadius: "50%",
-        border: `1px solid ${
+        border: `３px solid ${
           data.selected ? "var(--color-accent)" : "var(--color-border)"
         }`,
         background: "var(--color-bg)",
