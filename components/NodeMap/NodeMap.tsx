@@ -130,4 +130,12 @@ export default function NodeMap() {
         onPaneClick={handlePaneClick}
         fitView
         panOnScroll
-        zoomOnScroll={false
+        zoomOnScroll={false}
+        proOptions={{ hideAttribution: true }}
+      >
+        <Background color="var(--color-border)" gap={32} />
+        <Controls showInteractive={false} />
+      </ReactFlow>
+    </div>
+  );
+}
