@@ -7,6 +7,7 @@ export default function OjosamaNode({
 }: {
   data: { label: string; isCenter?: boolean; selected?: boolean };
 }) {
+  const handleStyle = { opacity: 0, pointerEvents: "none" as const };
   return (
     <div
       style={{
@@ -22,15 +23,20 @@ export default function OjosamaNode({
         fontWeight: data.isCenter ? 600 : 400,
         letterSpacing: "0.05em",
         textAlign: "center",
-        boxShadow: data.isCenter
-          ? "0 0 0 1px var(--color-accent)"
-          : "none",
+        boxShadow: data.isCenter ? "0 0 0 1px var(--color-accent)" : "none",
         transition: "border-color 0.4s ease",
+        position: "relative",
       }}
     >
-      <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
+      <Handle type="source" position={Position.Top} id="top" style={handleStyle} />
+      <Handle type="target" position={Position.Top} id="top" style={handleStyle} />
+      <Handle type="source" position={Position.Bottom} id="bottom" style={handleStyle} />
+      <Handle type="target" position={Position.Bottom} id="bottom" style={handleStyle} />
+      <Handle type="source" position={Position.Left} id="left" style={handleStyle} />
+      <Handle type="target" position={Position.Left} id="left" style={handleStyle} />
+      <Handle type="source" position={Position.Right} id="right" style={handleStyle} />
+      <Handle type="target" position={Position.Right} id="right" style={handleStyle} />
       {data.label}
-      <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
     </div>
   );
 }
