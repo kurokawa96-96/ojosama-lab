@@ -9,9 +9,11 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
+import FloatingEdge from "./FloatingEdge";
 import { getMainNodes, getRelations } from "@/lib/content";
 
 const nodeTypes = { ojosama: OjosamaNode };
+const edgeTypes = { floating: FloatingEdge };
 
 export default function NodeMap() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -62,7 +64,6 @@ export default function NodeMap() {
       target: r.target,
     }));
 
-    // 各ノードにとって「つながっている相手」の一覧を作っておく
     const connectionMap = new Map<string, Set<string>>();
     validRelations.forEach((r) => {
       if (!connectionMap.has(r.source)) connectionMap.set(r.source, new Set());
@@ -97,12 +98,10 @@ export default function NodeMap() {
 
   const displayEdges: Edge[] = baseEdges.map((e) => {
     const active =
-      !selectedId ||
-      e.source === selectedId ||
-      e.target === selectedId;
+      !selectedId || e.source === selectedId || e.target === selectedId;
     return {
       ...e,
-      type: "straight",
+      type: "floating",
       style: {
         stroke: active ? "var(--color-accent)" : "var(--color-border)",
         strokeWidth: active && selectedId ? 1.5 : 1,
@@ -112,13 +111,9 @@ export default function NodeMap() {
     };
   });
 
-  const handleNodeClick = useCallback(
-  (_: unknown, node: FlowNode) => {
-    console.log("node clicked:", node.id);
+  const handleNodeClick = useCallback((_: unknown, node: FlowNode) => {
     setSelectedId((prev) => (prev === node.id ? null : node.id));
-  },
-  []
-);
+  }, []);
 
   const handlePaneClick = useCallback(() => {
     setSelectedId(null);
@@ -130,16 +125,9 @@ export default function NodeMap() {
         nodes={displayNodes}
         edges={displayEdges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodeClick={handleNodeClick}
         onPaneClick={handlePaneClick}
         fitView
         panOnScroll
-        zoomOnScroll={false}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background color="var(--color-border)" gap={32} />
-        <Controls showInteractive={false} />
-      </ReactFlow>
-    </div>
-  );
-}
+        zoomOnScroll={false
