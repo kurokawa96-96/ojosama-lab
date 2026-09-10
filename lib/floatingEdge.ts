@@ -1,4 +1,4 @@
-import { Position, type Node, type XYPosition } from "reactflow";
+import { type Node, type XYPosition } from "reactflow";
 
 function getNodeCenter(node: Node): XYPosition {
   return {
@@ -7,18 +7,23 @@ function getNodeCenter(node: Node): XYPosition {
   };
 }
 
-// 円の中心から相手の中心へ向かう直線と、円周との交点を求める
-function getCircleIntersection(node: Node, target: XYPosition): XYPosition {
+// 楕円の中心から相手の中心へ向かう直線と、楕円の縁との交点を求める
+function getEllipseIntersection(node: Node, target: XYPosition): XYPosition {
   const center = getNodeCenter(node);
-  const radius = (node.width ?? 0) / 2;
+  const rx = (node.width ?? 0) / 2;
+  const ry = (node.height ?? 0) / 2;
 
   const dx = target.x - center.x;
   const dy = target.y - center.y;
-  const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+
+  // 方向ベクトルが楕円の縁と交わる係数tを求める
+  const denom = Math.sqrt(
+    (dx * dx) / (rx * rx || 1) + (dy * dy) / (ry * ry || 1)
+  ) || 1;
 
   return {
-    x: center.x + (dx / distance) * radius,
-    y: center.y + (dy / distance) * radius,
+    x: center.x + dx / denom,
+    y: center.y + dy / denom,
   };
 }
 
@@ -26,8 +31,8 @@ export function getFloatingEdgeParams(sourceNode: Node, targetNode: Node) {
   const sourceCenter = getNodeCenter(sourceNode);
   const targetCenter = getNodeCenter(targetNode);
 
-  const sourcePoint = getCircleIntersection(sourceNode, targetCenter);
-  const targetPoint = getCircleIntersection(targetNode, sourceCenter);
+  const sourcePoint = getEllipseIntersection(sourceNode, targetCenter);
+  const targetPoint = getEllipseIntersection(targetNode, sourceCenter);
 
   return { sourcePoint, targetPoint };
 }
