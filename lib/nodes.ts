@@ -13,3 +13,7 @@ export function getRelations(): Relation[] {
 export function getMainNodes(): Node[] {
   return getNodes().filter((n) => n.isMainNode);
 }
+
+export function getChildNodes(parentId: string): Node[] {
+  return getNodes().filter((n) => n.parentNode === parentId);
+}
