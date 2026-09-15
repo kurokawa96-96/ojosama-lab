@@ -29,6 +29,27 @@
       "label": "その他の研究",
       "type": "etc-collector",
       "isMainNode": true
+    },
+        {
+      "id": "fiction-research",
+      "label": "フィクション研究",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "etc"
+    },
+    {
+      "id": "villainess-research",
+      "label": "悪役令嬢研究",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "etc"
+    },
+    {
+      "id": "paradox-noblesse",
+      "label": "逆説的ノブレス",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "etc"
     }
   ]
 }
