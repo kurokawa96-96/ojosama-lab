@@ -10,70 +10,79 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
 import FloatingEdge from "./FloatingEdge";
-import { getMainNodes, getRelations } from "@/lib/nodes";
+import EtcPanel from "./EtcPanel";
+import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
 const edgeTypes = { floating: FloatingEdge };
 
 export default function NodeMap() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [etcOpen, setEtcOpen] = useState(false);
 
-  const { baseNodes, baseEdges, connectionMap } = useMemo(() => {
-    const mainNodes = getMainNodes();
-    const relations = getRelations();
+  const { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, etcChildren } =
+    useMemo(() => {
+      const mainNodes = getMainNodes();
+      const relations = getRelations();
 
-    const center = mainNodes.find((n) => n.type === "center");
-    const others = mainNodes.filter((n) => n.type !== "center");
+      const center = mainNodes.find((n) => n.type === "center");
+      const others = mainNodes.filter((n) => n.type !== "center");
 
-    const radius = 220;
-    const angleStep = (2 * Math.PI) / others.length;
+      const radius = 220;
+      const angleStep = (2 * Math.PI) / others.length;
 
-    const baseNodes: FlowNode[] = [];
+      const baseNodes: FlowNode[] = [];
 
-    if (center) {
-      baseNodes.push({
-        id: center.id,
-        type: "ojosama",
-        position: { x: 0, y: 0 },
-        data: { label: center.label, isCenter: true },
+      if (center) {
+        baseNodes.push({
+          id: center.id,
+          type: "ojosama",
+          position: { x: 0, y: 0 },
+          data: { label: center.label, isCenter: true },
+        });
+      }
+
+      others.forEach((node, i) => {
+        const angle = angleStep * i - Math.PI / 2;
+        baseNodes.push({
+          id: node.id,
+          type: "ojosama",
+          position: {
+            x: Math.cos(angle) * radius,
+            y: Math.sin(angle) * radius,
+          },
+          data: { label: node.label },
+        });
       });
-    }
 
-    others.forEach((node, i) => {
-      const angle = angleStep * i - Math.PI / 2;
-      baseNodes.push({
-        id: node.id,
-        type: "ojosama",
-        position: {
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius,
-        },
-        data: { label: node.label },
+      const validRelations = relations.filter(
+        (r) =>
+          mainNodes.some((n) => n.id === r.source) &&
+          mainNodes.some((n) => n.id === r.target)
+      );
+
+      const baseEdges: Edge[] = validRelations.map((r, i) => ({
+        id: `edge-${i}`,
+        source: r.source,
+        target: r.target,
+      }));
+
+      const connectionMap = new Map<string, Set<string>>();
+      validRelations.forEach((r) => {
+        if (!connectionMap.has(r.source)) connectionMap.set(r.source, new Set());
+        if (!connectionMap.has(r.target)) connectionMap.set(r.target, new Set());
+        connectionMap.get(r.source)!.add(r.target);
+        connectionMap.get(r.target)!.add(r.source);
       });
-    });
 
-    const validRelations = relations.filter(
-      (r) =>
-        mainNodes.some((n) => n.id === r.source) &&
-        mainNodes.some((n) => n.id === r.target)
-    );
+      const mainNodeTypeMap = new Map<string, string>();
+      mainNodes.forEach((n) => mainNodeTypeMap.set(n.id, n.type));
 
-    const baseEdges: Edge[] = validRelations.map((r, i) => ({
-      id: `edge-${i}`,
-      source: r.source,
-      target: r.target,
-    }));
+      const etcNode = mainNodes.find((n) => n.type === "etc-collector");
+      const etcChildren = etcNode ? getChildNodes(etcNode.id) : [];
 
-    const connectionMap = new Map<string, Set<string>>();
-    validRelations.forEach((r) => {
-      if (!connectionMap.has(r.source)) connectionMap.set(r.source, new Set());
-      if (!connectionMap.has(r.target)) connectionMap.set(r.target, new Set());
-      connectionMap.get(r.source)!.add(r.target);
-      connectionMap.get(r.target)!.add(r.source);
-    });
-
-    return { baseNodes, baseEdges, connectionMap };
-  }, []);
+      return { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, etcChildren };
+    }, []);
 
   const isConnected = useCallback(
     (nodeId: string) => {
@@ -111,16 +120,23 @@ export default function NodeMap() {
     };
   });
 
-  const handleNodeClick = useCallback((_: unknown, node: FlowNode) => {
-    setSelectedId((prev) => (prev === node.id ? null : node.id));
-  }, []);
+  const handleNodeClick = useCallback(
+    (_: unknown, node: FlowNode) => {
+      if (mainNodeTypeMap.get(node.id) === "etc-collector") {
+        setEtcOpen(true);
+        return;
+      }
+      setSelectedId((prev) => (prev === node.id ? null : node.id));
+    },
+    [mainNodeTypeMap]
+  );
 
   const handlePaneClick = useCallback(() => {
     setSelectedId(null);
   }, []);
 
   return (
-    <div style={{ width: "100%", height: "600px" }}>
+    <div style={{ width: "100%", height: "600px", position: "relative" }}>
       <ReactFlow
         nodes={displayNodes}
         edges={displayEdges}
@@ -136,6 +152,12 @@ export default function NodeMap() {
         <Background color="var(--color-border)" gap={32} />
         <Controls showInteractive={false} />
       </ReactFlow>
+
+      <EtcPanel
+        open={etcOpen}
+        nodes={etcChildren}
+        onClose={() => setEtcOpen(false)}
+      />
     </div>
   );
 }
