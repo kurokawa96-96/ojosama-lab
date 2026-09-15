@@ -36,18 +36,3 @@ export function getArticleBySlug(slug: string): Article | null {
     content,
   } as Article;
 }
-  return articles.filter((a) => a.status === "published");
-}
-
-export function getArticleBySlug(slug: string): Article | null {
-  const filePath = path.join(articlesDir, `${slug}.md`);
-  if (!fs.existsSync(filePath)) return null;
-
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(raw);
-
-  return {
-    ...(data as Omit<Article, "content">),
-    content,
-  } as Article;
-}
