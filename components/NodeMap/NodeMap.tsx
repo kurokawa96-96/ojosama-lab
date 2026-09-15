@@ -10,7 +10,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
 import FloatingEdge from "./FloatingEdge";
-import { getMainNodes, getRelations } from "@/lib/content";
+import { getMainNodes, getRelations } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
 const edgeTypes = { floating: FloatingEdge };
