@@ -1,8 +1,10 @@
+import ReactMarkdown from "react-markdown";
+
 interface ResearchBodyProps {
-  html: string;
+  content: string;
 }
 
-export default function ResearchBody({ html }: ResearchBodyProps) {
+export default function ResearchBody({ content }: ResearchBodyProps) {
   return (
     <section
       style={{
@@ -13,7 +15,8 @@ export default function ResearchBody({ html }: ResearchBodyProps) {
         maxWidth: "680px",
         margin: "0 auto",
       }}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    >
+      <ReactMarkdown>{content}</ReactMarkdown>
+    </section>
   );
 }
