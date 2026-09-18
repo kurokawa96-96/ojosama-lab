@@ -16,6 +16,8 @@ export function getAllArticles(): Article[] {
     const { data, content } = matter(raw);
 
     return {
+      indicators: [],
+      verdict: { type: "conditional", text: "", basedOn: [] },
       ...(data as Omit<Article, "content">),
       content,
     } as Article;
@@ -32,6 +34,8 @@ export function getArticleBySlug(slug: string): Article | null {
   const { data, content } = matter(raw);
 
   return {
+    indicators: [],
+    verdict: { type: "conditional", text: "", basedOn: [] },
     ...(data as Omit<Article, "content">),
     content,
   } as Article;
