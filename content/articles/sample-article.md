@@ -2,7 +2,7 @@
 id: "sample-article"
 title: "お嬢様研究所、開設にあたって"
 slug: "sample-article"
-status: "published"
+status: "draft"
 publishedAt: "2026-09-08T00:00:00+09:00"
 updatedAt: "2026-09-08T00:00:00+09:00"
 excerpt: "この研究所が何を目指すのかについて"
