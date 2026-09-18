@@ -5,6 +5,17 @@ import type { Article } from "@/types/content";
 
 const articlesDir = path.join(process.cwd(), "content/articles");
 
+function toArticle(data: unknown, content: string): Article {
+  const article = data as Partial<Omit<Article, "content">>;
+
+  return {
+    ...article,
+    indicators: article.indicators ?? [],
+    verdict: article.verdict ?? { type: "conditional", text: "", basedOn: [] },
+    content,
+  } as Article;
+}
+
 export function getAllArticles(): Article[] {
   if (!fs.existsSync(articlesDir)) return [];
 
@@ -15,12 +26,7 @@ export function getAllArticles(): Article[] {
     const raw = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(raw);
 
-    return {
-      indicators: [],
-      verdict: { type: "conditional", text: "", basedOn: [] },
-      ...(data as Omit<Article, "content">),
-      content,
-    } as Article;
+    return toArticle(data, content);
   });
 
   return articles.filter((a) => a.status === "published");
@@ -33,10 +39,5 @@ export function getArticleBySlug(slug: string): Article | null {
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(raw);
 
-  return {
-    indicators: [],
-    verdict: { type: "conditional", text: "", basedOn: [] },
-    ...(data as Omit<Article, "content">),
-    content,
-  } as Article;
+  return toArticle(data, content);
 }
