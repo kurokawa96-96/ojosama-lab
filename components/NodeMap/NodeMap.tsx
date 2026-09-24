@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import ReactFlow, {
   Background,
   Controls,
@@ -10,17 +11,21 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
 import FloatingEdge from "./FloatingEdge";
-import EtcPanel from "./EtcPanel";
+import EtcPanel from "../EtcPanel";
 import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
 const edgeTypes = { floating: FloatingEdge };
 
+const SATELLITE_RADIUS = 130;
+
 export default function NodeMap() {
+  const router = useRouter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
   const [etcOpen, setEtcOpen] = useState(false);
 
-  const { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, etcChildren } =
+  const { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, nodePositions, childrenByParent } =
     useMemo(() => {
       const mainNodes = getMainNodes();
       const relations = getRelations();
@@ -32,6 +37,7 @@ export default function NodeMap() {
       const angleStep = (2 * Math.PI) / others.length;
 
       const baseNodes: FlowNode[] = [];
+      const nodePositions = new Map<string, { x: number; y: number }>();
 
       if (center) {
         baseNodes.push({
@@ -40,19 +46,22 @@ export default function NodeMap() {
           position: { x: 0, y: 0 },
           data: { label: center.label, isCenter: true },
         });
+        nodePositions.set(center.id, { x: 0, y: 0 });
       }
 
       others.forEach((node, i) => {
         const angle = angleStep * i - Math.PI / 2;
+        const pos = {
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius,
+        };
         baseNodes.push({
           id: node.id,
           type: "ojosama",
-          position: {
-            x: Math.cos(angle) * radius,
-            y: Math.sin(angle) * radius,
-          },
+          position: pos,
           data: { label: node.label },
         });
+        nodePositions.set(node.id, pos);
       });
 
       const validRelations = relations.filter(
@@ -78,11 +87,20 @@ export default function NodeMap() {
       const mainNodeTypeMap = new Map<string, string>();
       mainNodes.forEach((n) => mainNodeTypeMap.set(n.id, n.type));
 
-      const etcNode = mainNodes.find((n) => n.type === "etc-collector");
-      const etcChildren = etcNode ? getChildNodes(etcNode.id) : [];
+      const childrenByParent = new Map<string, ReturnType<typeof getChildNodes>>();
+      mainNodes.forEach((n) => {
+        if (n.type === "category") {
+          childrenByParent.set(n.id, getChildNodes(n.id));
+        }
+      });
 
-      return { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, etcChildren };
+      return { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, nodePositions, childrenByParent };
     }, []);
+
+  const etcChildren = useMemo(() => {
+    const etcNode = getMainNodes().find((n) => n.type === "etc-collector");
+    return etcNode ? getChildNodes(etcNode.id) : [];
+  }, []);
 
   const isConnected = useCallback(
     (nodeId: string) => {
@@ -93,46 +111,108 @@ export default function NodeMap() {
     [selectedId, connectionMap]
   );
 
-  const displayNodes: FlowNode[] = baseNodes.map((n) => ({
-    ...n,
-    data: {
-      ...n.data,
-      selected: n.id === selectedId,
-    },
-    style: {
-      opacity: isConnected(n.id) ? 1 : 0.3,
-      transition: "opacity 0.4s ease",
-    },
-  }));
+  const satelliteNodes: FlowNode[] = useMemo(() => {
+    if (!expandedCategoryId) return [];
+    const children = childrenByParent.get(expandedCategoryId) ?? [];
+    const parentPos = nodePositions.get(expandedCategoryId);
+    if (!parentPos || children.length === 0) return [];
 
-  const displayEdges: Edge[] = baseEdges.map((e) => {
-    const active =
-      !selectedId || e.source === selectedId || e.target === selectedId;
-    return {
-      ...e,
+    const angleStep = (2 * Math.PI) / Math.max(children.length, 1);
+
+    return children.map((child, i) => {
+      const angle = angleStep * i;
+      return {
+        id: child.id,
+        type: "ojosama",
+        position: {
+          x: parentPos.x + Math.cos(angle) * SATELLITE_RADIUS,
+          y: parentPos.y + Math.sin(angle) * SATELLITE_RADIUS,
+        },
+        data: { label: child.label, isSatellite: true },
+        style: { opacity: 1, transition: "opacity 0.4s ease" },
+      };
+    });
+  }, [expandedCategoryId, childrenByParent, nodePositions]);
+
+  const satelliteEdges: Edge[] = useMemo(() => {
+    if (!expandedCategoryId) return [];
+    const children = childrenByParent.get(expandedCategoryId) ?? [];
+    return children.map((child, i) => ({
+      id: `satellite-edge-${expandedCategoryId}-${i}`,
+      source: expandedCategoryId,
+      target: child.id,
       type: "floating",
       style: {
-        stroke: active ? "var(--color-accent)" : "var(--color-border)",
-        strokeWidth: active && selectedId ? 1.5 : 1,
-        opacity: active ? 1 : 0.25,
-        transition: "stroke 0.4s ease, opacity 0.4s ease",
+        stroke: "var(--color-accent)",
+        strokeWidth: 1,
+        opacity: 0.7,
+        transition: "opacity 0.4s ease",
       },
-    };
-  });
+    }));
+  }, [expandedCategoryId, childrenByParent]);
+
+  const displayNodes: FlowNode[] = [
+    ...baseNodes.map((n) => ({
+      ...n,
+      data: {
+        ...n.data,
+        selected: n.id === selectedId || n.id === expandedCategoryId,
+      },
+      style: {
+        opacity: isConnected(n.id) ? 1 : 0.3,
+        transition: "opacity 0.4s ease",
+      },
+    })),
+    ...satelliteNodes,
+  ];
+
+  const displayEdges: Edge[] = [
+    ...baseEdges.map((e) => {
+      const active =
+        !selectedId || e.source === selectedId || e.target === selectedId;
+      return {
+        ...e,
+        type: "floating",
+        style: {
+          stroke: active ? "var(--color-accent)" : "var(--color-border)",
+          strokeWidth: active && selectedId ? 1.5 : 1,
+          opacity: active ? 1 : 0.25,
+          transition: "stroke 0.4s ease, opacity 0.4s ease",
+        },
+      };
+    }),
+    ...satelliteEdges,
+  ];
 
   const handleNodeClick = useCallback(
     (_: unknown, node: FlowNode) => {
-      if (mainNodeTypeMap.get(node.id) === "etc-collector") {
+      const type = mainNodeTypeMap.get(node.id);
+
+      if (type === "etc-collector") {
         setEtcOpen(true);
         return;
       }
+
+      if (type === "category") {
+        setExpandedCategoryId((prev) => (prev === node.id ? null : node.id));
+        setSelectedId((prev) => (prev === node.id ? null : node.id));
+        return;
+      }
+
+      if (node.data?.isSatellite) {
+        router.push(`/articles/${node.id}`);
+        return;
+      }
+
       setSelectedId((prev) => (prev === node.id ? null : node.id));
+      setExpandedCategoryId(null);
     },
-    [mainNodeTypeMap]
+    [mainNodeTypeMap, router]
   );
 
   const handlePaneClick = useCallback(() => {
     setSelectedId(null);
+    setExpandedCategoryId(null);
   }, []);
 
   return (
