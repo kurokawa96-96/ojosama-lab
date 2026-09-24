@@ -11,7 +11,7 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
 import FloatingEdge from "./FloatingEdge";
-import EtcPanel from "../EtcPanel";
+import EtcPanel from "./EtcPanel";
 import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
