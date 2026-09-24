@@ -30,7 +30,7 @@
       "type": "etc-collector",
       "isMainNode": true
     },
-        {
+    {
       "id": "fiction-research",
       "label": "フィクション研究",
       "type": "concept",
@@ -50,6 +50,13 @@
       "type": "concept",
       "isMainNode": false,
       "parentNode": "etc"
+    },
+    {
+      "id": "hierarchy-and-status",
+      "label": "ノブレスオブリージュ",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "history"
     }
   ]
 }
