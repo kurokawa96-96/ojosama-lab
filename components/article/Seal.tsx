@@ -32,6 +32,8 @@ export default function Seal({ sealType, sealLabel }: SealProps) {
           alt="落款"
           width={100}
           height={100}
+          loading="lazy"
+          quality={60}
           style={{ objectFit: "contain" }}
         />
       </div>
