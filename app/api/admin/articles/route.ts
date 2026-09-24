@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     tags: [],
     relatedNodes: [slug],
     relatedArticles: [],
-    sealType: "seal-tensho",
+    sealType: body.sealType ?? "seal-tensho",
     sealLabel: "",
     sectionType: "research",
     coverImage: null,
