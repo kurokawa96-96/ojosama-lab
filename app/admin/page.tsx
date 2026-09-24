@@ -31,6 +31,7 @@ export default function AdminDashboard() {
   const [excerpt, setExcerpt] = useState("");
   const [categoryId, setCategoryId] = useState(CATEGORIES[0].id);
   const [content, setContent] = useState("");
+  const [sealType, setSealType] = useState<"seal-tensho" | "seal-kaisho">("seal-tensho");
   const [indicators, setIndicators] = useState<IndicatorRow[]>([
     { label: "", strength: "medium", note: "" },
   ]);
@@ -85,14 +86,15 @@ export default function AdminDashboard() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title,
-        slug,
-        excerpt,
-        categoryId,
-        content,
-        indicators: indicatorItems,
-        verdict: { type: verdictType, text: verdictText, basedOn: basedOnKeys },
-      }),
+  title,
+  slug,
+  excerpt,
+  categoryId,
+  content,
+  indicators: indicatorItems,
+  verdict: { type: verdictType, text: verdictText, basedOn: basedOnKeys },
+  sealType,
+}),
     });
 
     setSubmitting(false);
@@ -231,6 +233,40 @@ export default function AdminDashboard() {
       <h2 style={{ fontFamily: "var(--font-mincho)", fontSize: "16px", margin: "0 0 12px" }}>
         アメリアのお嬢様認定
       </h2>
+      <h2 style={{ fontFamily: "var(--font-mincho)", fontSize: "16px", margin: "32px 0 12px" }}>
+  落款を選ぶ
+</h2>
+<div style={{ display: "flex", gap: "16px", marginBottom: "32px" }}>
+  {(["seal-tensho", "seal-kaisho"] as const).map((type) => (
+    <label
+      key={type}
+      style={{
+        border: `2px solid ${sealType === type ? "var(--color-accent)" : "var(--color-border)"}`,
+        borderRadius: "8px",
+        padding: "8px",
+        cursor: "pointer",
+        textAlign: "center",
+      }}
+    >
+      <input
+        type="radio"
+        name="sealType"
+        value={type}
+        checked={sealType === type}
+        onChange={() => setSealType(type)}
+        style={{ display: "none" }}
+      />
+      <img
+        src={`/seals/${type}.png`}
+        alt={type}
+        style={{ width: "72px", height: "72px", objectFit: "contain" }}
+      />
+      <p style={{ fontSize: "12px", marginTop: "4px", color: "var(--color-text-muted)" }}>
+        {type === "seal-tensho" ? "篆書" : "楷書"}
+      </p>
+    </label>
+  ))}
+</div>
       <select
         style={inputStyle}
         value={verdictType}
