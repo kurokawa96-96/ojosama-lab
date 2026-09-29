@@ -1,7 +1,8 @@
 import "./globals.css";
 import Script from "next/script";
 import { ADSENSE_CLIENT_ID } from "@/lib/ads";
-
+import SiteHeader from "@/components/layout/SiteHeader";
+import SiteFooter from "@/components/layout/SiteFooter";
 export const metadata = {
   title: "お嬢様研究所 | OJOSAMA LABORATORY",
   description: "「お嬢様」という現象を研究するWebサイト",
@@ -28,7 +29,11 @@ export default function RootLayout({
   />
 )}
       </head>
-      <body>{children}</body>
+            <body>
+        <SiteHeader />
+        <div style={{ paddingTop: "56px" }}>{children}</div>
+        <SiteFooter />
+      </body>
     </html>
   );
 }
