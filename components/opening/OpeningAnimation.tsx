@@ -96,3 +96,71 @@ export default function OpeningAnimation() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7 }}
+                        style={{
+              fontFamily: "var(--font-mincho)",
+              fontSize: "28px",
+              color: "#e8a0b0",
+              letterSpacing: "0.18em",
+              position: "absolute",
+            }}
+          >
+            ごきげんよう
+          </motion.p>
+        )}
+      </AnimatePresence>
+
+      {phase === "petals" &&
+        petals.map((petal) => {
+          const rad = (petal.angle * Math.PI) / 180;
+          const midX = Math.cos(rad) * petal.distance * 0.55 + petal.wobble;
+          const endX = Math.cos(rad) * petal.distance;
+          const midY = Math.sin(rad) * petal.distance * 0.55 - 20;
+          const endY = Math.sin(rad) * petal.distance - 50;
+
+          return (
+            <motion.div
+              key={petal.id}
+              initial={{ x: 0, y: 0, opacity: 0.95, scale: 0.6, rotate: 0 }}
+              animate={{
+                x: [0, midX, endX],
+                y: [0, midY, endY],
+                opacity: [0.95, 0.9, 0],
+                scale: [0.6, 1, 0.5],
+                rotate: [0, petal.spin * 0.5, petal.spin],
+              }}
+              transition={{
+                duration: petal.duration,
+                delay: petal.delay,
+                ease: "easeOut",
+                times: [0, 0.5, 1],
+              }}
+              style={{ position: "absolute" }}
+            >
+              <Petal size={petal.size} hue={petal.hue} />
+            </motion.div>
+          );
+        })}
+
+      <AnimatePresence>
+        {phase === "logo" && (
+          <motion.p
+            key="logo"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7 }}
+            style={{
+              fontFamily: "var(--font-mincho)",
+              fontSize: "24px",
+              color: "var(--color-text)",
+              letterSpacing: "0.12em",
+              position: "absolute",
+            }}
+          >
+            お嬢様研究所
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
