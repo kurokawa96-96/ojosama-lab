@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getArticleBySlug, getAllArticles } from "@/lib/content";
 import ResearchBody from "@/components/article/ResearchBody";
+import AdSlot from "@/components/ads/AdSlot";
 import IndicatorPanel from "@/components/article/IndicatorPanel";
 import AmeliaVerdict from "@/components/article/AmeliaVerdict";
 import Seal from "@/components/article/Seal";
