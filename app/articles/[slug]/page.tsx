@@ -4,6 +4,7 @@ import ResearchBody from "@/components/article/ResearchBody";
 import IndicatorPanel from "@/components/article/IndicatorPanel";
 import AmeliaVerdict from "@/components/article/AmeliaVerdict";
 import Seal from "@/components/article/Seal";
+import ArticleHeader from "@/components/article/ArticleHeader";
 
 export function generateStaticParams() {
   return getAllArticles().map((article) => ({ slug: article.slug }));
@@ -15,6 +16,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
   return (
     <main style={{ padding: "64px 24px" }}>
+      <ArticleHeader />
       <h1
         style={{
           fontFamily: "var(--font-mincho)",
