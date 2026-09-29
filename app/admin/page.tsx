@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const CATEGORIES = [
+const [existingArticles, setExistingArticles] = useState<{ slug: string; title: string }[]>([]);
+const [relatedArticles, setRelatedArticles] = useState<Set<string>>(new Set());const CATEGORIES = [
   { id: "history", label: "歴史" },
   { id: "culture", label: "文化" },
   { id: "thought", label: "社会・思想" },
