@@ -27,6 +27,7 @@ export default function OjosamaNode({
         transition: "border-color 0.4s ease",
         position: "relative",
         maxWidth: data.isSatellite ? "100px" : "none",
+        transform: "translate(-50%, -50%)",
       }}
     >
       <Handle type="source" position={Position.Top} id="top" style={handleStyle} />
