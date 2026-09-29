@@ -1,6 +1,7 @@
 import "./globals.css";
 import Script from "next/script";
 import { ADSENSE_CLIENT_ID } from "@/lib/ads";
+import OpeningAnimation from "@/components/opening/OpeningAnimation";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
 export const metadata = {
@@ -30,10 +31,11 @@ export default function RootLayout({
 )}
       </head>
             <body>
-        <SiteHeader />
-        <div style={{ paddingTop: "56px" }}>{children}</div>
-        <SiteFooter />
-      </body>
+  <OpeningAnimation />
+  <SiteHeader />
+  <div style={{ paddingTop: "56px" }}>{children}</div>
+  <SiteFooter />
+</body>
     </html>
   );
 }
