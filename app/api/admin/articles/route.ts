@@ -3,10 +3,19 @@ import { cookies } from "next/headers";
 import matter from "gray-matter";
 import { getFile, putFile } from "@/lib/github";
 import type { IndicatorItem, Verdict } from "@/types/content";
+import { getAllArticles } from "@/lib/content";
 
 function isAuthed() {
   const session = cookies().get("admin_session")?.value;
   return session === process.env.ADMIN_SESSION_SECRET;
+}
+export async function GET() {
+  if (!isAuthed()) {
+    return NextResponse.json({ error: "ログインが必要ですわ" }, { status: 401 });
+  }
+
+  const articles = getAllArticles().map((a) => ({ slug: a.slug, title: a.title }));
+  return NextResponse.json({ articles });
 }
 
 export async function POST(request: Request) {
