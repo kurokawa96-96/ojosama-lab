@@ -1,4 +1,5 @@
 import NodeMap from "@/components/NodeMap/NodeMap";
+import AdSlot from "@/components/ads/AdSlot";
 
 export default function Home() {
   return (
