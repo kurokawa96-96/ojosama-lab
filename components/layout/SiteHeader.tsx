@@ -27,7 +27,7 @@ export default function SiteHeader() {
           width={220}
           height={130}
           priority
-          style={{ height: "36px", width: "auto" }}
+          style={{ height: "52px", width: "auto" }}
         />
       </Link>
       <nav style={{ display: "flex", gap: "20px" }}>
