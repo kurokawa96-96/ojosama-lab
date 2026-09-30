@@ -15,6 +15,7 @@ import EtcPanel from "./EtcPanel";
 import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
+const SIZE = { center: 140, main: 100, satellite: 72 };
 const edgeTypes = { floating: FloatingEdge };
 
 const SATELLITE_RADIUS = 130;
@@ -40,29 +41,27 @@ export default function NodeMap() {
       const nodePositions = new Map<string, { x: number; y: number }>();
 
       if (center) {
-        baseNodes.push({
-          id: center.id,
-          type: "ojosama",
-          position: { x: 0, y: 0 },
-          data: { label: center.label, isCenter: true },
-        });
-        nodePositions.set(center.id, { x: 0, y: 0 });
-      }
+  baseNodes.push({
+    id: center.id,
+    type: "ojosama",
+    position: { x: -SIZE.center / 2, y: -SIZE.center / 2 },
+    data: { label: center.label, isCenter: true },
+  });
+  nodePositions.set(center.id, { x: 0, y: 0 });
+}
 
       others.forEach((node, i) => {
-        const angle = angleStep * i - Math.PI / 2;
-        const pos = {
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius,
-        };
-        baseNodes.push({
-          id: node.id,
-          type: "ojosama",
-          position: pos,
-          data: { label: node.label },
-        });
-        nodePositions.set(node.id, pos);
-      });
+  const angle = angleStep * i - Math.PI / 2;
+  const trueX = Math.cos(angle) * radius;
+  const trueY = Math.sin(angle) * radius;
+  baseNodes.push({
+    id: node.id,
+    type: "ojosama",
+    position: { x: trueX - SIZE.main / 2, y: trueY - SIZE.main / 2 },
+    data: { label: node.label },
+  });
+  nodePositions.set(node.id, { x: trueX, y: trueY });
+});
 
       const validRelations = relations.filter(
         (r) =>
@@ -112,27 +111,26 @@ export default function NodeMap() {
   );
 
   const satelliteNodes: FlowNode[] = useMemo(() => {
-    if (!expandedCategoryId) return [];
-    const children = childrenByParent.get(expandedCategoryId) ?? [];
-    const parentPos = nodePositions.get(expandedCategoryId);
-    if (!parentPos || children.length === 0) return [];
+  if (!expandedCategoryId) return [];
+  const children = childrenByParent.get(expandedCategoryId) ?? [];
+  const parentPos = nodePositions.get(expandedCategoryId);
+  if (!parentPos || children.length === 0) return [];
 
-    const angleStep = (2 * Math.PI) / Math.max(children.length, 1);
+  const angleStep = (2 * Math.PI) / Math.max(children.length, 1);
 
-    return children.map((child, i) => {
-      const angle = angleStep * i;
-      return {
-        id: child.id,
-        type: "ojosama",
-        position: {
-          x: parentPos.x + Math.cos(angle) * SATELLITE_RADIUS,
-          y: parentPos.y + Math.sin(angle) * SATELLITE_RADIUS,
-        },
-        data: { label: child.label, isSatellite: true },
-        style: { opacity: 1, transition: "opacity 0.4s ease" },
-      };
-    });
-  }, [expandedCategoryId, childrenByParent, nodePositions]);
+  return children.map((child, i) => {
+    const angle = angleStep * i;
+    const trueX = parentPos.x + Math.cos(angle) * SATELLITE_RADIUS;
+    const trueY = parentPos.y + Math.sin(angle) * SATELLITE_RADIUS;
+    return {
+      id: child.id,
+      type: "ojosama",
+      position: { x: trueX - SIZE.satellite / 2, y: trueY - SIZE.satellite / 2 },
+      data: { label: child.label, isSatellite: true },
+      style: { opacity: 1, transition: "opacity 0.4s ease" },
+    };
+  });
+}, [expandedCategoryId, childrenByParent, nodePositions]);
 
   const satelliteEdges: Edge[] = useMemo(() => {
     if (!expandedCategoryId) return [];
