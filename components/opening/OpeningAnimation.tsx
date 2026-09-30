@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const PETAL_COUNT = 14;
 
@@ -89,25 +90,25 @@ export default function OpeningAnimation() {
       }}
     >
       <AnimatePresence>
-        {phase === "greeting" && (
-          <motion.p
-            key="greeting"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7 }}
-                        style={{
-              fontFamily: "var(--font-mincho)",
-              fontSize: "28px",
-              color: "#e8a0b0",
-              letterSpacing: "0.18em",
-              position: "absolute",
-            }}
-          >
-            ごきげんよう
-          </motion.p>
-        )}
-      </AnimatePresence>
+  {phase === "logo" && (
+    <motion.div
+      key="logo"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+      style={{ position: "absolute" }}
+    >
+      <Image
+        src="/logo.png"
+        alt="お嬢様研究所"
+        width={440}
+        height={260}
+        style={{ width: "min(70vw, 320px)", height: "auto" }}
+      />
+    </motion.div>
+  )}
+</AnimatePresence>
 
       {phase === "petals" &&
         petals.map((petal) => {
