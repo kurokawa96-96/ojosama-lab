@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SiteHeader() {
   return (
@@ -13,23 +14,21 @@ export default function SiteHeader() {
         zIndex: 50,
         background: "var(--color-bg)",
         borderBottom: "1px solid var(--color-border)",
-        padding: "14px 20px",
+        padding: "10px 20px",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
       }}
     >
-      <Link
-        href="/"
-        style={{
-          fontFamily: "var(--font-mincho)",
-          fontSize: "16px",
-          color: "var(--color-text)",
-          textDecoration: "none",
-          letterSpacing: "0.05em",
-        }}
-      >
-        お嬢様研究所
+      <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+        <Image
+          src="/logo.png"
+          alt="お嬢様研究所"
+          width={220}
+          height={130}
+          priority
+          style={{ height: "36px", width: "auto" }}
+        />
       </Link>
       <nav style={{ display: "flex", gap: "20px" }}>
         <Link
