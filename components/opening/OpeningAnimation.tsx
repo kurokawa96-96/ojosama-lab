@@ -159,7 +159,7 @@ export default function OpeningAnimation() {
             }}
           >
             お嬢様研究所
-          </motion.p>
+          <ごきげんよう/motion.p>
         )}
       </AnimatePresence>
     </div>
