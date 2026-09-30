@@ -90,25 +90,25 @@ export default function OpeningAnimation() {
       }}
     >
       <AnimatePresence>
-  {phase === "logo" && (
-    <motion.div
-      key="logo"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.7 }}
-      style={{ position: "absolute" }}
-    >
-      <Image
-        src="/logo.png"
-        alt="お嬢様研究所"
-        width={440}
-        height={260}
-        style={{ width: "min(70vw, 320px)", height: "auto" }}
-      />
-    </motion.div>
-  )}
-</AnimatePresence>
+        {phase === "greeting" && (
+          <motion.p
+            key="greeting"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7 }}
+            style={{
+              fontFamily: "var(--font-mincho)",
+              fontSize: "28px",
+              color:"#e8a0b0",
+              letterSpacing: "0.18em",
+              position: "absolute",
+            }}
+          >
+            ごきげんよう
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       {phase === "petals" &&
         petals.map((petal) => {
@@ -144,22 +144,22 @@ export default function OpeningAnimation() {
 
       <AnimatePresence>
         {phase === "logo" && (
-          <motion.p
+          <motion.div
             key="logo"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7 }}
-            style={{
-              fontFamily: "var(--font-mincho)",
-              fontSize: "24px",
-              color: "var(--color-text)",
-              letterSpacing: "0.12em",
-              position: "absolute",
-            }}
+            style={{ position: "absolute" }}
           >
-            お嬢様研究所
-          <ごきげんよう/motion.p>
+            <Image
+              src="/logo.png"
+              alt="お嬢様研究所"
+              width={440}
+              height={260}
+              style={{ width: "min(70vw, 320px)", height: "auto" }}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
