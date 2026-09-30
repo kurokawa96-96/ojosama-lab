@@ -2,16 +2,26 @@
 
 import { Handle, Position } from "reactflow";
 
+const SIZE = { center: 140, main: 100, satellite: 72 };
+
 export default function OjosamaNode({
   data,
 }: {
   data: { label: string; isCenter?: boolean; isSatellite?: boolean; selected?: boolean };
 }) {
   const handleStyle = { opacity: 0, pointerEvents: "none" as const };
+  const size = data.isCenter ? SIZE.center : data.isSatellite ? SIZE.satellite : SIZE.main;
+
   return (
     <div
       style={{
-        padding: data.isCenter ? "24px 32px" : data.isSatellite ? "10px 16px" : "16px 24px",
+        width: `${size}px`,
+        height: `${size}px`,
+        boxSizing: "border-box",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "8px",
         borderRadius: "50%",
         border: `1px solid ${
           data.selected ? "var(--color-accent)" : "var(--color-border)"
@@ -26,8 +36,6 @@ export default function OjosamaNode({
         boxShadow: data.isCenter ? "0 0 0 1px var(--color-accent)" : "none",
         transition: "border-color 0.4s ease",
         position: "relative",
-        maxWidth: data.isSatellite ? "100px" : "none",
-        transform: "translate(-50%, -50%)",
       }}
     >
       <Handle type="source" position={Position.Top} id="top" style={handleStyle} />
