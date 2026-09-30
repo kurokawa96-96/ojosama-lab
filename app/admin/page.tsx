@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { suggestSlug } from "@/lib/slugify";
 
 const CATEGORIES = [
   { id: "history", label: "歴史" },
@@ -40,8 +41,13 @@ export default function AdminDashboard() {
   const [basedOn, setBasedOn] = useState<Set<number>>(new Set());
   const [existingArticles, setExistingArticles] = useState<{ slug: string; title: string }[]>([]);
   const [relatedArticles, setRelatedArticles] = useState<Set<string>>(new Set());
+  const [slugTouched, setSlugTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  
+  useEffect(() => {
+  setSlug(suggestSlug());
+}, []);
 
   useEffect(() => {
     fetch("/api/admin/articles")
@@ -83,7 +89,8 @@ export default function AdminDashboard() {
       return next;
     });
   };
-
+  
+const slugDuplicate = existingArticles.some((a) => a.slug === slug && slug.length > 0);
   const handleSubmit = async () => {
     setSubmitting(true);
     setError("");
@@ -151,9 +158,20 @@ export default function AdminDashboard() {
       <label style={labelStyle}>タイトル</label>
       <input style={inputStyle} value={title} onChange={(e) => setTitle(e.target.value)} />
 
-      <label style={labelStyle}>スラッグ（URL・ノードID／半角英数とハイフンのみ）</label>
-      <input style={inputStyle} value={slug} onChange={(e) => setSlug(e.target.value)} />
-
+     <label style={labelStyle}>スラッグ（URL・ノードID／自動生成、必要なら書き換え可）</label>
+<input
+  style={inputStyle}
+  value={slug}
+  onChange={(e) => {
+    setSlug(e.target.value);
+    setSlugTouched(true);
+  }}
+/>
+{slugDuplicate && (
+  <p style={{ color: "crimson", fontSize: "12px", marginTop: "-12px", marginBottom: "16px" }}>
+    このスラッグは既に使われていますわ
+  </p>
+)}
       <label style={labelStyle}>抜粋</label>
       <input style={inputStyle} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
 
@@ -338,7 +356,7 @@ export default function AdminDashboard() {
       <button
         type="button"
         onClick={handleSubmit}
-        disabled={submitting || !title || !slug}
+        disabled={submitting || !title || !slug || slugDuplicate}
         style={{
           width: "100%",
           padding: "12px",
