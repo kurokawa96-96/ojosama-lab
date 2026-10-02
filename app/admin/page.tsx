@@ -8,6 +8,7 @@ const CATEGORIES = [
   { id: "history", label: "歴史" },
   { id: "culture", label: "文化" },
   { id: "thought", label: "社会・思想" },
+  { id: "definition", label: "定義" },
 ];
 
 const VERDICT_TYPES = [
