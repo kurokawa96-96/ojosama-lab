@@ -15,7 +15,7 @@ import EtcPanel from "./EtcPanel";
 import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
-const SIZE = { center: 140, main: 100, satellite: 72 };
+const SIZE = { center: 140, main: 100, satellite: 14 };
 const edgeTypes = { floating: FloatingEdge };
 
 const SATELLITE_RADIUS = 130;
