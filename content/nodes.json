@@ -24,6 +24,12 @@
       "type": "category",
       "isMainNode": true
     },
+        {
+      "id": "definition",
+      "label": "定義",
+      "type": "category",
+      "isMainNode": true
+    },
     {
       "id": "etc",
       "label": "その他の研究",
