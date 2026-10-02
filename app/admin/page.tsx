@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { suggestSlug } from "@/lib/slugify";
+import Link from "next/link";
 
 const CATEGORIES = [
   { id: "history", label: "歴史" },
@@ -152,9 +153,17 @@ const slugDuplicate = existingArticles.some((a) => a.slug === slug && slug.lengt
 
   return (
     <div style={{ maxWidth: "680px", margin: "0 auto", padding: "48px 24px" }}>
-      <h1 style={{ fontFamily: "var(--font-mincho)", fontSize: "20px", marginBottom: "32px" }}>
-        新規記事の投稿
-      </h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+  <h1 style={{ fontFamily: "var(--font-mincho)", fontSize: "20px" }}>
+    新規記事の投稿
+  </h1>
+  <Link
+    href="/admin/articles"
+    style={{ fontSize: "13px", color: "var(--color-accent)", textDecoration: "none" }}
+  >
+    記事一覧・編集へ
+  </Link>
+</div>
 
       <label style={labelStyle}>タイトル</label>
       <input style={inputStyle} value={title} onChange={(e) => setTitle(e.target.value)} />
