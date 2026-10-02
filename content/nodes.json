@@ -24,7 +24,7 @@
       "type": "category",
       "isMainNode": true
     },
-        {
+    {
       "id": "definition",
       "label": "定義",
       "type": "category",
@@ -60,6 +60,13 @@
     {
       "id": "hierarchy-and-status",
       "label": "ノブレスオブリージュ",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "history"
+    },
+    {
+      "id": "article-20261002-mzde",
+      "label": "お嬢様定義・第一義 　　そもそも、お嬢様って何？",
       "type": "concept",
       "isMainNode": false,
       "parentNode": "history"
