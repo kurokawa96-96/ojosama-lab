@@ -16,7 +16,40 @@ export default function ResearchBody({ content }: ResearchBodyProps) {
         margin: "0 auto",
       }}
     >
-      <ReactMarkdown>{content}</ReactMarkdown>
+      <ReactMarkdown
+        components={{
+          h2: ({ children }) => (
+            <h2
+              style={{
+                fontSize: "19px",
+                fontWeight: 600,
+                marginTop: "36px",
+                marginBottom: "12px",
+                paddingBottom: "8px",
+                borderBottom: "1px solid var(--color-border)",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3
+              style={{
+                fontSize: "16px",
+                fontWeight: 600,
+                marginTop: "28px",
+                marginBottom: "10px",
+                color: "var(--color-accent)",
+              }}
+            >
+              {children}
+            </h3>
+          ),
+        }}
+      >
+        {content}
+      </ReactMarkdown>
     </section>
   );
 }
