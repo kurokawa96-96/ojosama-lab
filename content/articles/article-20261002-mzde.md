@@ -4,10 +4,10 @@ title: お嬢様定義・第一義 　　そもそも、お嬢様って何？
 slug: article-20261002-mzde
 status: published
 publishedAt: '2026-10-02T01:56:58.611Z'
-updatedAt: '2026-10-02T01:56:58.611Z'
+updatedAt: '2026-10-02T02:05:58.437Z'
 excerpt: ''
 categories:
-  - history
+  - definition
 tags: []
 relatedNodes:
   - article-20261002-mzde
