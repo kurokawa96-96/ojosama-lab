@@ -49,6 +49,21 @@ export async function putFile(
       }),
     }
   );
+  export async function deleteFile(path: string, message: string, sha: string): Promise<void> {
+  const res = await fetch(
+    `${GITHUB_API}/repos/${OWNER}/${REPO}/contents/${path}`,
+    {
+      method: "DELETE",
+      headers: headers(),
+      body: JSON.stringify({ message, sha, branch: BRANCH }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`GitHub削除失敗: ${res.status} ${err}`);
+  }
+}
 
   if (!res.ok) {
     const err = await res.text();
