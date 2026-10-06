@@ -36,6 +36,12 @@
       "type": "etc-collector",
       "isMainNode": true
     },
+        {
+      "id": "desuwa",
+      "label": "ですわ探訪",
+      "type": "category",
+      "isMainNode": true
+    },
     {
       "id": "fiction-research",
       "label": "フィクション研究",
