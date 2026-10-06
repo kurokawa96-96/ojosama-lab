@@ -10,6 +10,7 @@ const CATEGORIES = [
   { id: "culture", label: "文化" },
   { id: "thought", label: "社会・思想" },
   { id: "definition", label: "定義" },
+  { id: "desuwa", label: "ですわ探訪" },
 ];
 
 const VERDICT_TYPES = [
