@@ -27,6 +27,9 @@ const SATELLITE_GAP = 38; // 記事同士の縦の間隔
 // 右側に空けておく余白の位置。大きくするほど全体が左へ寄ります（その分わずかに縮小されます）
 const RESERVED_RIGHT_X = 320;
 
+// 記事がまだないカテゴリに表示する「準備中」の目印
+const PLACEHOLDER_ID = "__placeholder__";
+
 // 画面に収める計算に「右側の余白」を含めるための、見えない目印
 const spacerNode: FlowNode = {
   id: "__spacer__",
@@ -148,7 +151,24 @@ export default function NodeMap() {
     if (!expandedCategoryId) return [];
     const children = childrenByParent.get(expandedCategoryId) ?? [];
     const parentPos = nodePositions.get(expandedCategoryId);
-    if (!parentPos || children.length === 0) return [];
+    if (!parentPos) return [];
+
+    // 記事がまだない場合は「準備中」の目印を1つだけ出す
+    if (children.length === 0) {
+      return [
+        {
+          id: PLACEHOLDER_ID,
+          type: "ojosama",
+          position: {
+            x: SATELLITE_X - SIZE.satellite / 2,
+            y: parentPos.y - SIZE.satellite / 2,
+          },
+          data: { label: "準備中でございますわ", isSatellite: true, isPlaceholder: true },
+          style: { opacity: 1, transition: "opacity 0.4s ease" },
+          selectable: false,
+        },
+      ];
+    }
 
     return children.map((child, i) => {
       const trueX = SATELLITE_X;
@@ -166,6 +186,25 @@ export default function NodeMap() {
   const satelliteEdges: Edge[] = useMemo(() => {
     if (!expandedCategoryId) return [];
     const children = childrenByParent.get(expandedCategoryId) ?? [];
+
+    if (children.length === 0) {
+      return [
+        {
+          id: `satellite-edge-${expandedCategoryId}-placeholder`,
+          source: expandedCategoryId,
+          target: PLACEHOLDER_ID,
+          sourceHandle: "right",
+          targetHandle: "left",
+          type: "tree",
+          style: {
+            stroke: "var(--color-border)",
+            strokeWidth: 1,
+            opacity: 0.6,
+          },
+        },
+      ];
+    }
+
     return children.map((child, i) => ({
       id: `satellite-edge-${expandedCategoryId}-${i}`,
       source: expandedCategoryId,
@@ -232,6 +271,9 @@ export default function NodeMap() {
 
   const handleNodeClick = useCallback(
     (_: unknown, node: FlowNode) => {
+      // 「準備中」の目印は、タップしても何も起こらない
+      if (node.id === PLACEHOLDER_ID) return;
+
       const type = mainNodeTypeMap.get(node.id);
 
       if (isExpandableType(type)) {
