@@ -11,6 +11,7 @@ const CATEGORIES = [
   { id: "thought", label: "社会・思想" },
   { id: "definition", label: "定義" },
   { id: "desuwa", label: "ですわ探訪" },
+   { id: "etc", label: "その他の研究" },
 ];
 
 const VERDICT_TYPES = [
