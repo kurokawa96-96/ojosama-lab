@@ -7,11 +7,18 @@ const SIZE = { center: 140, main: 100, satellite: 14 };
 export default function OjosamaNode({
   data,
 }: {
-  data: { label: string; isCenter?: boolean; isSatellite?: boolean; selected?: boolean };
+  data: {
+    label: string;
+    isCenter?: boolean;
+    isSatellite?: boolean;
+    isPlaceholder?: boolean;
+    selected?: boolean;
+  };
 }) {
   const handleStyle = { opacity: 0, pointerEvents: "none" as const };
 
   if (data.isSatellite) {
+    const faint = Boolean(data.isPlaceholder);
     return (
       <div
         title={data.label}
@@ -21,9 +28,10 @@ export default function OjosamaNode({
           borderRadius: "50%",
           background: data.selected ? "var(--color-accent)" : "var(--color-border)",
           border: `1px solid ${data.selected ? "var(--color-accent)" : "var(--color-border)"}`,
+          opacity: faint ? 0.5 : 1,
           position: "relative",
           overflow: "visible",
-          cursor: "pointer",
+          cursor: faint ? "default" : "pointer",
         }}
       >
         <Handle type="source" position={Position.Top} id="top" style={handleStyle} />
@@ -51,7 +59,7 @@ export default function OjosamaNode({
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
-            cursor: "pointer",
+            cursor: faint ? "default" : "pointer",
           }}
         >
           {data.label}
