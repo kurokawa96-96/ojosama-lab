@@ -12,7 +12,6 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
 import TreeEdge from "./TreeEdge";
-import EtcPanel from "./EtcPanel";
 import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
@@ -26,7 +25,7 @@ const CATEGORY_GAP = 116; // カテゴリ同士の縦の間隔
 const SATELLITE_X = 300; // 記事列の位置
 const SATELLITE_GAP = 38; // 記事同士の縦の間隔
 // 右側に空けておく余白の位置。大きくするほど全体が左へ寄ります（その分わずかに縮小されます）
-const RESERVED_RIGHT_X = 330;
+const RESERVED_RIGHT_X = 320;
 
 // 画面に収める計算に「右側の余白」を含めるための、見えない目印
 const spacerNode: FlowNode = {
@@ -47,12 +46,15 @@ const spacerNode: FlowNode = {
   focusable: false,
 };
 
+// 展開できるノードの種類（「その他の研究」もカテゴリと同じ扱い）
+const isExpandableType = (type: string | undefined) =>
+  type === "category" || type === "etc-collector";
+
 export default function NodeMap() {
   const router = useRouter();
   const [rf, setRf] = useState<ReactFlowInstance | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
-  const [etcOpen, setEtcOpen] = useState(false);
 
   const { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, nodePositions, childrenByParent } =
     useMemo(() => {
@@ -125,18 +127,13 @@ export default function NodeMap() {
 
       const childrenByParent = new Map<string, ReturnType<typeof getChildNodes>>();
       mainNodes.forEach((n) => {
-        if (n.type === "category") {
+        if (isExpandableType(n.type)) {
           childrenByParent.set(n.id, getChildNodes(n.id));
         }
       });
 
       return { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, nodePositions, childrenByParent };
     }, []);
-
-  const etcChildren = useMemo(() => {
-    const etcNode = getMainNodes().find((n) => n.type === "etc-collector");
-    return etcNode ? getChildNodes(etcNode.id) : [];
-  }, []);
 
   const isConnected = useCallback(
     (nodeId: string) => {
@@ -237,12 +234,7 @@ export default function NodeMap() {
     (_: unknown, node: FlowNode) => {
       const type = mainNodeTypeMap.get(node.id);
 
-      if (type === "etc-collector") {
-        setEtcOpen(true);
-        return;
-      }
-
-      if (type === "category") {
+      if (isExpandableType(type)) {
         setExpandedCategoryId((prev) => (prev === node.id ? null : node.id));
         setSelectedId((prev) => (prev === node.id ? null : node.id));
         return;
@@ -286,12 +278,6 @@ export default function NodeMap() {
         <Background color="var(--color-border)" gap={32} />
         <Controls showInteractive={false} />
       </ReactFlow>
-
-      <EtcPanel
-        open={etcOpen}
-        nodes={etcChildren}
-        onClose={() => setEtcOpen(false)}
-      />
     </div>
   );
 }
