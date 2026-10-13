@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ReactFlow, {
   Background,
   Controls,
   type Edge,
   type Node as FlowNode,
+  type ReactFlowInstance,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
@@ -15,13 +16,19 @@ import EtcPanel from "./EtcPanel";
 import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
-const SIZE = { center: 140, main: 100, satellite: 14 };
 const edgeTypes = { floating: FloatingEdge };
 
-const SATELLITE_RADIUS = 130;
+const SIZE = { center: 140, main: 100, satellite: 14 };
+
+// 横型の家系図レイアウトの数値（見た目の調整はここだけで済みます）
+const CATEGORY_X = 180; // カテゴリ列の位置（中心ノードからの距離）
+const CATEGORY_GAP = 116; // カテゴリ同士の縦の間隔
+const SATELLITE_X = 300; // 記事列の位置
+const SATELLITE_GAP = 38; // 記事同士の縦の間隔
 
 export default function NodeMap() {
   const router = useRouter();
+  const [rf, setRf] = useState<ReactFlowInstance | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
   const [etcOpen, setEtcOpen] = useState(false);
@@ -34,34 +41,30 @@ export default function NodeMap() {
       const center = mainNodes.find((n) => n.type === "center");
       const others = mainNodes.filter((n) => n.type !== "center");
 
-      const radius = 220;
-      const angleStep = (2 * Math.PI) / others.length;
-
       const baseNodes: FlowNode[] = [];
       const nodePositions = new Map<string, { x: number; y: number }>();
 
       if (center) {
-  baseNodes.push({
-    id: center.id,
-    type: "ojosama",
-    position: { x: -SIZE.center / 2, y: -SIZE.center / 2 },
-    data: { label: center.label, isCenter: true },
-  });
-  nodePositions.set(center.id, { x: 0, y: 0 });
-}
+        baseNodes.push({
+          id: center.id,
+          type: "ojosama",
+          position: { x: -SIZE.center / 2, y: -SIZE.center / 2 },
+          data: { label: center.label, isCenter: true },
+        });
+        nodePositions.set(center.id, { x: 0, y: 0 });
+      }
 
       others.forEach((node, i) => {
-  const angle = angleStep * i - Math.PI / 2;
-  const trueX = Math.cos(angle) * radius;
-  const trueY = Math.sin(angle) * radius;
-  baseNodes.push({
-    id: node.id,
-    type: "ojosama",
-    position: { x: trueX - SIZE.main / 2, y: trueY - SIZE.main / 2 },
-    data: { label: node.label },
-  });
-  nodePositions.set(node.id, { x: trueX, y: trueY });
-});
+        const trueX = CATEGORY_X;
+        const trueY = (i - (others.length - 1) / 2) * CATEGORY_GAP;
+        baseNodes.push({
+          id: node.id,
+          type: "ojosama",
+          position: { x: trueX - SIZE.main / 2, y: trueY - SIZE.main / 2 },
+          data: { label: node.label },
+        });
+        nodePositions.set(node.id, { x: trueX, y: trueY });
+      });
 
       const validRelations = relations.filter(
         (r) =>
@@ -111,26 +114,23 @@ export default function NodeMap() {
   );
 
   const satelliteNodes: FlowNode[] = useMemo(() => {
-  if (!expandedCategoryId) return [];
-  const children = childrenByParent.get(expandedCategoryId) ?? [];
-  const parentPos = nodePositions.get(expandedCategoryId);
-  if (!parentPos || children.length === 0) return [];
+    if (!expandedCategoryId) return [];
+    const children = childrenByParent.get(expandedCategoryId) ?? [];
+    const parentPos = nodePositions.get(expandedCategoryId);
+    if (!parentPos || children.length === 0) return [];
 
-  const angleStep = (2 * Math.PI) / Math.max(children.length, 1);
-
-  return children.map((child, i) => {
-    const angle = angleStep * i;
-    const trueX = parentPos.x + Math.cos(angle) * SATELLITE_RADIUS;
-    const trueY = parentPos.y + Math.sin(angle) * SATELLITE_RADIUS;
-    return {
-      id: child.id,
-      type: "ojosama",
-      position: { x: trueX - SIZE.satellite / 2, y: trueY - SIZE.satellite / 2 },
-      data: { label: child.label, isSatellite: true },
-      style: { opacity: 1, transition: "opacity 0.4s ease" },
-    };
-  });
-}, [expandedCategoryId, childrenByParent, nodePositions]);
+    return children.map((child, i) => {
+      const trueX = SATELLITE_X;
+      const trueY = parentPos.y + (i - (children.length - 1) / 2) * SATELLITE_GAP;
+      return {
+        id: child.id,
+        type: "ojosama",
+        position: { x: trueX - SIZE.satellite / 2, y: trueY - SIZE.satellite / 2 },
+        data: { label: child.label, isSatellite: true },
+        style: { opacity: 1, transition: "opacity 0.4s ease" },
+      };
+    });
+  }, [expandedCategoryId, childrenByParent, nodePositions]);
 
   const satelliteEdges: Edge[] = useMemo(() => {
     if (!expandedCategoryId) return [];
@@ -148,6 +148,15 @@ export default function NodeMap() {
       },
     }));
   }, [expandedCategoryId, childrenByParent]);
+
+  // 展開・収納のたびに、全体が画面に収まるよう表示を調整する
+  useEffect(() => {
+    if (!rf) return;
+    const timer = setTimeout(() => {
+      rf.fitView({ padding: 0.12, duration: 400 });
+    }, 80);
+    return () => clearTimeout(timer);
+  }, [expandedCategoryId, rf]);
 
   const displayNodes: FlowNode[] = [
     ...baseNodes.map((n) => ({
@@ -214,17 +223,22 @@ export default function NodeMap() {
   }, []);
 
   return (
-    <div style={{ width: "100%", height: "600px", position: "relative" }}>
+    <div style={{ width: "100%", height: "720px", position: "relative" }}>
       <ReactFlow
         nodes={displayNodes}
         edges={displayEdges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        onInit={setRf}
         onNodeClick={handleNodeClick}
         onPaneClick={handlePaneClick}
         fitView
-        panOnScroll
+        fitViewOptions={{ padding: 0.12 }}
+        nodesDraggable={false}
+        panOnDrag={false}
+        panOnScroll={false}
         zoomOnScroll={false}
+        zoomOnPinch={false}
         proOptions={{ hideAttribution: true }}
       >
         <Background color="var(--color-border)" gap={32} />
