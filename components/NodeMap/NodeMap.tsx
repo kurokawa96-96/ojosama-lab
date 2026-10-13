@@ -11,12 +11,12 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import OjosamaNode from "./OjosamaNode";
-import FloatingEdge from "./FloatingEdge";
+import TreeEdge from "./TreeEdge";
 import EtcPanel from "./EtcPanel";
 import { getMainNodes, getRelations, getChildNodes } from "@/lib/nodes";
 
 const nodeTypes = { ojosama: OjosamaNode };
-const edgeTypes = { floating: FloatingEdge };
+const edgeTypes = { tree: TreeEdge };
 
 const SIZE = { center: 140, main: 100, satellite: 14 };
 
@@ -25,6 +25,27 @@ const CATEGORY_X = 180; // カテゴリ列の位置（中心ノードからの�
 const CATEGORY_GAP = 116; // カテゴリ同士の縦の間隔
 const SATELLITE_X = 300; // 記事列の位置
 const SATELLITE_GAP = 38; // 記事同士の縦の間隔
+// 右側に空けておく余白の位置。大きくするほど全体が左へ寄ります（その分わずかに縮小されます）
+const RESERVED_RIGHT_X = 320;
+
+// 画面に収める計算に「右側の余白」を含めるための、見えない目印
+const spacerNode: FlowNode = {
+  id: "__spacer__",
+  position: { x: RESERVED_RIGHT_X, y: 0 },
+  data: { label: "" },
+  style: {
+    width: 1,
+    height: 1,
+    opacity: 0,
+    pointerEvents: "none",
+    border: "none",
+    padding: 0,
+    background: "transparent",
+  },
+  selectable: false,
+  draggable: false,
+  focusable: false,
+};
 
 export default function NodeMap() {
   const router = useRouter();
@@ -72,11 +93,24 @@ export default function NodeMap() {
           mainNodes.some((n) => n.id === r.target)
       );
 
-      const baseEdges: Edge[] = validRelations.map((r, i) => ({
-        id: `edge-${i}`,
-        source: r.source,
-        target: r.target,
-      }));
+      // 線は「中心 → 各カテゴリ」の木構造として描く
+      const baseEdges: Edge[] = [];
+      if (center) {
+        const seen = new Set<string>();
+        validRelations.forEach((r) => {
+          if (r.source !== center.id && r.target !== center.id) return;
+          const other = r.source === center.id ? r.target : r.source;
+          if (seen.has(other)) return;
+          seen.add(other);
+          baseEdges.push({
+            id: `edge-${other}`,
+            source: center.id,
+            target: other,
+            sourceHandle: "right",
+            targetHandle: "left",
+          });
+        });
+      }
 
       const connectionMap = new Map<string, Set<string>>();
       validRelations.forEach((r) => {
@@ -139,7 +173,9 @@ export default function NodeMap() {
       id: `satellite-edge-${expandedCategoryId}-${i}`,
       source: expandedCategoryId,
       target: child.id,
-      type: "floating",
+      sourceHandle: "right",
+      targetHandle: "left",
+      type: "tree",
       style: {
         stroke: "var(--color-accent)",
         strokeWidth: 1,
@@ -171,23 +207,29 @@ export default function NodeMap() {
       },
     })),
     ...satelliteNodes,
+    spacerNode,
   ];
 
+  // 色づいた線が幹の上に重なるよう、選ばれていない線を先に描く
   const displayEdges: Edge[] = [
-    ...baseEdges.map((e) => {
-      const active =
-        !selectedId || e.source === selectedId || e.target === selectedId;
-      return {
-        ...e,
-        type: "floating",
-        style: {
-          stroke: active ? "var(--color-accent)" : "var(--color-border)",
-          strokeWidth: active && selectedId ? 1.5 : 1,
-          opacity: active ? 1 : 0.25,
-          transition: "stroke 0.4s ease, opacity 0.4s ease",
-        },
-      };
-    }),
+    ...baseEdges
+      .map((e) => {
+        const active =
+          !selectedId || e.source === selectedId || e.target === selectedId;
+        const edge: Edge = {
+          ...e,
+          type: "tree",
+          style: {
+            stroke: active ? "var(--color-accent)" : "var(--color-border)",
+            strokeWidth: active && selectedId ? 1.5 : 1,
+            opacity: active ? 1 : 0.25,
+            transition: "stroke 0.4s ease, opacity 0.4s ease",
+          },
+        };
+        return { edge, active };
+      })
+      .sort((a, b) => Number(a.active) - Number(b.active))
+      .map((x) => x.edge),
     ...satelliteEdges,
   ];
 
