@@ -26,7 +26,7 @@ const CATEGORY_GAP = 116; // カテゴリ同士の縦の間隔
 const SATELLITE_X = 300; // 記事列の位置
 const SATELLITE_GAP = 38; // 記事同士の縦の間隔
 // 右側に空けておく余白の位置。大きくするほど全体が左へ寄ります（その分わずかに縮小されます）
-const RESERVED_RIGHT_X = 320;
+const RESERVED_RIGHT_X = 330;
 
 // 画面に収める計算に「右側の余白」を含めるための、見えない目印
 const spacerNode: FlowNode = {
