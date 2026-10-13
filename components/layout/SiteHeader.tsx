@@ -1,59 +1,42 @@
-"use client";
-
 import Link from "next/link";
-import Image from "next/image";
 
-export default function SiteHeader() {
+export default function SiteFooter() {
   return (
-    <header
+    <footer
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        background: "var(--color-bg)",
-        borderBottom: "1px solid var(--color-border)",
-        padding: "10px 20px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        borderTop: "1px solid var(--color-border)",
+        padding: "32px 20px",
+        textAlign: "center",
       }}
     >
-      <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-        <Image
-          src="/logo.png"
-          alt="お嬢様研究所"
-          width={220}
-          height={130}
-          priority
-          style={{ height: "52px", width: "auto" }}
-        />
-      </Link>
-      <nav style={{ display: "flex", gap: "20px" }}>
+      <img
+        src="/seals/seal-tensho.png"
+        alt="お嬢様研究所"
+        style={{ width: "40px", height: "40px", objectFit: "contain", opacity: 0.7 }}
+      />
+      <nav style={{ marginTop: "12px", display: "flex", justifyContent: "center", gap: "20px" }}>
         <Link
-          href="/"
+          href="/contact"
           style={{
             fontFamily: "var(--font-mincho)",
-            fontSize: "13px",
+            fontSize: "12px",
             color: "var(--color-text-muted)",
             textDecoration: "none",
           }}
         >
-          TOP
-        </Link>
-        <Link
-          href="/articles"
-          style={{
-            fontFamily: "var(--font-mincho)",
-            fontSize: "13px",
-            color: "var(--color-text-muted)",
-            textDecoration: "none",
-          }}
-        >
-          記事一覧
+          お問い合わせ
         </Link>
       </nav>
-    </header>
+      <p
+        style={{
+          fontFamily: "var(--font-mincho)",
+          fontSize: "11px",
+          color: "var(--color-text-muted)",
+          marginTop: "8px",
+        }}
+      >
+        © {new Date().getFullYear()} お嬢様研究所
+      </p>
+    </footer>
   );
 }
