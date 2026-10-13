@@ -23,6 +23,7 @@ export default function OjosamaNode({
           border: `1px solid ${data.selected ? "var(--color-accent)" : "var(--color-border)"}`,
           position: "relative",
           overflow: "visible",
+          cursor: "pointer",
         }}
       >
         <Handle type="source" position={Position.Top} id="top" style={handleStyle} />
@@ -36,21 +37,21 @@ export default function OjosamaNode({
         <span
           style={{
             position: "absolute",
-            top: "100%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            marginTop: "6px",
-            width: "88px",
+            left: "100%",
+            top: "50%",
+            transform: "translateY(-50%)",
+            marginLeft: "8px",
+            width: "96px",
             fontFamily: "var(--font-serif-jp)",
             fontSize: "11px",
             lineHeight: 1.4,
             color: "var(--color-text-muted)",
-            textAlign: "center",
+            textAlign: "left",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
-            pointerEvents: "none",
+            cursor: "pointer",
           }}
         >
           {data.label}
