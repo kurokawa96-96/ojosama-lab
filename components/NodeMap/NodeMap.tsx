@@ -58,7 +58,12 @@ export default function NodeMap() {
   const [rf, setRf] = useState<ReactFlowInstance | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
+    const [isTouch, setIsTouch] = useState(false);
 
+  // タッチ操作の端末（スマートフォン等）かどうかを判定する
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
   const { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, nodePositions, childrenByParent } =
     useMemo(() => {
       const mainNodes = getMainNodes();
@@ -311,14 +316,14 @@ export default function NodeMap() {
         fitView
         fitViewOptions={{ padding: 0.12 }}
         nodesDraggable={false}
-        panOnDrag={false}
+        panOnDrag={!isTouch}
         panOnScroll={false}
         zoomOnScroll={false}
         zoomOnPinch={false}
         proOptions={{ hideAttribution: true }}
       >
         <Background color="var(--color-border)" gap={32} />
-        <Controls showInteractive={false} />
+       {!isTouch && <Controls showInteractive={false} />}
       </ReactFlow>
     </div>
   );
