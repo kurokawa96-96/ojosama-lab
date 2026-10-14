@@ -19,13 +19,16 @@ const edgeTypes = { tree: TreeEdge };
 
 const SIZE = { center: 140, main: 100, satellite: 14 };
 
-// 横型の家系図レイアウトの数値（見た目の調整はここだけで済みます）
-const CATEGORY_X = 180; // カテゴリ列の位置（中心ノードからの距離）
-const CATEGORY_GAP = 116; // カテゴリ同士の縦の間隔
-const SATELLITE_X = 300; // 記事列の位置
+// 縦型の家系図レイアウトの数値（見た目の調整はここだけで済みます）
+const CATEGORY_X = 120; // カテゴリの位置（幹から右へどれだけ離すか）
+const CATEGORY_Y0 = 140; // 最初のカテゴリの縦位置（中心ノードの下）
+const CATEGORY_GAP = 120; // カテゴリ同士の縦の間隔
+const SATELLITE_X = 232; // 記事の点の位置
 const SATELLITE_GAP = 38; // 記事同士の縦の間隔
-// 右側に空けておく余白の位置。大きくするほど全体が左へ寄ります（その分わずかに縮小されます）
-const RESERVED_RIGHT_X = 320;
+// 記事の名前（点の右側に出る文字）の幅。OjosamaNode.tsxのラベル幅(96)と同じ値にすること
+const LABEL_WIDTH = 96;
+// 記事の名前が収まる右端。画面に収める計算に含めるための位置
+const RESERVED_RIGHT_X = SATELLITE_X + SIZE.satellite / 2 + 8 + LABEL_WIDTH + 6;
 
 // 記事がまだないカテゴリに表示する「準備中」の目印
 const PLACEHOLDER_ID = "__placeholder__";
@@ -58,90 +61,110 @@ export default function NodeMap() {
   const [rf, setRf] = useState<ReactFlowInstance | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null);
-    const [isTouch, setIsTouch] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
 
   // タッチ操作の端末（スマートフォン等）かどうかを判定する
   useEffect(() => {
     setIsTouch(window.matchMedia("(pointer: coarse)").matches);
   }, []);
-  const { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, nodePositions, childrenByParent } =
-    useMemo(() => {
-      const mainNodes = getMainNodes();
-      const relations = getRelations();
 
-      const center = mainNodes.find((n) => n.type === "center");
-      const others = mainNodes.filter((n) => n.type !== "center");
+  const {
+    baseNodes,
+    baseEdges,
+    connectionMap,
+    mainNodeTypeMap,
+    nodePositions,
+    childrenByParent,
+    mapHeight,
+  } = useMemo(() => {
+    const mainNodes = getMainNodes();
+    const relations = getRelations();
 
-      const baseNodes: FlowNode[] = [];
-      const nodePositions = new Map<string, { x: number; y: number }>();
+    const center = mainNodes.find((n) => n.type === "center");
+    const others = mainNodes.filter((n) => n.type !== "center");
 
-      if (center) {
-        baseNodes.push({
-          id: center.id,
-          type: "ojosama",
-          position: { x: -SIZE.center / 2, y: -SIZE.center / 2 },
-          data: { label: center.label, isCenter: true },
-        });
-        nodePositions.set(center.id, { x: 0, y: 0 });
-      }
+    const baseNodes: FlowNode[] = [];
+    const nodePositions = new Map<string, { x: number; y: number }>();
 
-      others.forEach((node, i) => {
-        const trueX = CATEGORY_X;
-        const trueY = (i - (others.length - 1) / 2) * CATEGORY_GAP;
-        baseNodes.push({
-          id: node.id,
-          type: "ojosama",
-          position: { x: trueX - SIZE.main / 2, y: trueY - SIZE.main / 2 },
-          data: { label: node.label },
-        });
-        nodePositions.set(node.id, { x: trueX, y: trueY });
+    if (center) {
+      baseNodes.push({
+        id: center.id,
+        type: "ojosama",
+        position: { x: -SIZE.center / 2, y: -SIZE.center / 2 },
+        data: { label: center.label, isCenter: true },
       });
+      nodePositions.set(center.id, { x: 0, y: 0 });
+    }
 
-      const validRelations = relations.filter(
-        (r) =>
-          mainNodes.some((n) => n.id === r.source) &&
-          mainNodes.some((n) => n.id === r.target)
-      );
+    others.forEach((node, i) => {
+      const trueX = CATEGORY_X;
+      const trueY = CATEGORY_Y0 + i * CATEGORY_GAP;
+      baseNodes.push({
+        id: node.id,
+        type: "ojosama",
+        position: { x: trueX - SIZE.main / 2, y: trueY - SIZE.main / 2 },
+        data: { label: node.label },
+      });
+      nodePositions.set(node.id, { x: trueX, y: trueY });
+    });
 
-      // 線は「中心 → 各カテゴリ」の木構造として描く
-      const baseEdges: Edge[] = [];
-      if (center) {
-        const seen = new Set<string>();
-        validRelations.forEach((r) => {
-          if (r.source !== center.id && r.target !== center.id) return;
-          const other = r.source === center.id ? r.target : r.source;
-          if (seen.has(other)) return;
-          seen.add(other);
-          baseEdges.push({
-            id: `edge-${other}`,
-            source: center.id,
-            target: other,
-            sourceHandle: "right",
-            targetHandle: "left",
-          });
-        });
-      }
+    const validRelations = relations.filter(
+      (r) =>
+        mainNodes.some((n) => n.id === r.source) &&
+        mainNodes.some((n) => n.id === r.target)
+    );
 
-      const connectionMap = new Map<string, Set<string>>();
+    // 線は「中心の下端 → 各カテゴリの左端」の木構造として描く（1本の幹から枝分かれ）
+    const baseEdges: Edge[] = [];
+    if (center) {
+      const seen = new Set<string>();
       validRelations.forEach((r) => {
-        if (!connectionMap.has(r.source)) connectionMap.set(r.source, new Set());
-        if (!connectionMap.has(r.target)) connectionMap.set(r.target, new Set());
-        connectionMap.get(r.source)!.add(r.target);
-        connectionMap.get(r.target)!.add(r.source);
+        if (r.source !== center.id && r.target !== center.id) return;
+        const other = r.source === center.id ? r.target : r.source;
+        if (seen.has(other)) return;
+        seen.add(other);
+        baseEdges.push({
+          id: `edge-${other}`,
+          source: center.id,
+          target: other,
+          sourceHandle: "bottom",
+          targetHandle: "left",
+        });
       });
+    }
 
-      const mainNodeTypeMap = new Map<string, string>();
-      mainNodes.forEach((n) => mainNodeTypeMap.set(n.id, n.type));
+    const connectionMap = new Map<string, Set<string>>();
+    validRelations.forEach((r) => {
+      if (!connectionMap.has(r.source)) connectionMap.set(r.source, new Set());
+      if (!connectionMap.has(r.target)) connectionMap.set(r.target, new Set());
+      connectionMap.get(r.source)!.add(r.target);
+      connectionMap.get(r.target)!.add(r.source);
+    });
 
-      const childrenByParent = new Map<string, ReturnType<typeof getChildNodes>>();
-      mainNodes.forEach((n) => {
-        if (isExpandableType(n.type)) {
-          childrenByParent.set(n.id, getChildNodes(n.id));
-        }
-      });
+    const mainNodeTypeMap = new Map<string, string>();
+    mainNodes.forEach((n) => mainNodeTypeMap.set(n.id, n.type));
 
-      return { baseNodes, baseEdges, connectionMap, mainNodeTypeMap, nodePositions, childrenByParent };
-    }, []);
+    const childrenByParent = new Map<string, ReturnType<typeof getChildNodes>>();
+    mainNodes.forEach((n) => {
+      if (isExpandableType(n.type)) {
+        childrenByParent.set(n.id, getChildNodes(n.id));
+      }
+    });
+
+    // カテゴリの数に合わせて、マップの高さを決める（増えても縮まないように）
+    const lastCategoryY = CATEGORY_Y0 + Math.max(others.length - 1, 0) * CATEGORY_GAP;
+    const mapHeight = Math.round((SIZE.center / 2 + lastCategoryY + SIZE.main / 2) * 0.95);
+
+    return {
+      baseNodes,
+      baseEdges,
+      connectionMap,
+      mainNodeTypeMap,
+      nodePositions,
+      childrenByParent,
+      mapHeight,
+    };
+  }, []);
 
   const isConnected = useCallback(
     (nodeId: string) => {
@@ -230,7 +253,7 @@ export default function NodeMap() {
   useEffect(() => {
     if (!rf) return;
     const timer = setTimeout(() => {
-      rf.fitView({ padding: 0.12, duration: 400 });
+      rf.fitView({ padding: 0.06, duration: 400 });
     }, 80);
     return () => clearTimeout(timer);
   }, [expandedCategoryId, rf]);
@@ -252,6 +275,7 @@ export default function NodeMap() {
   ];
 
   // 色づいた線が幹の上に重なるよう、選ばれていない線を先に描く
+  // （重なった線が濃く見えないよう、選ばれていない線は透かさず薄い色で描く）
   const displayEdges: Edge[] = [
     ...baseEdges
       .map((e) => {
@@ -263,8 +287,7 @@ export default function NodeMap() {
           style: {
             stroke: active ? "var(--color-accent)" : "var(--color-border)",
             strokeWidth: active && selectedId ? 1.5 : 1,
-            opacity: active ? 1 : 0.25,
-            transition: "stroke 0.4s ease, opacity 0.4s ease",
+            transition: "stroke 0.4s ease",
           },
         };
         return { edge, active };
@@ -304,7 +327,7 @@ export default function NodeMap() {
   }, []);
 
   return (
-    <div style={{ width: "100%", height: "720px", position: "relative" }}>
+    <div style={{ width: "100%", height: `${mapHeight}px`, position: "relative" }}>
       <ReactFlow
         nodes={displayNodes}
         edges={displayEdges}
@@ -314,7 +337,7 @@ export default function NodeMap() {
         onNodeClick={handleNodeClick}
         onPaneClick={handlePaneClick}
         fitView
-        fitViewOptions={{ padding: 0.12 }}
+        fitViewOptions={{ padding: 0.06 }}
         nodesDraggable={false}
         panOnDrag={!isTouch}
         panOnScroll={false}
@@ -323,7 +346,7 @@ export default function NodeMap() {
         proOptions={{ hideAttribution: true }}
       >
         <Background color="var(--color-border)" gap={32} />
-       {!isTouch && <Controls showInteractive={false} />}
+        {!isTouch && <Controls showInteractive={false} />}
       </ReactFlow>
     </div>
   );
