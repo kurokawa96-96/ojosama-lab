@@ -42,7 +42,6 @@
       "type": "category",
       "isMainNode": true
     },
-  
     {
       "id": "hierarchy-and-status",
       "label": "ノブレスオブリージュ",
@@ -77,6 +76,13 @@
       "type": "concept",
       "isMainNode": false,
       "parentNode": "definition"
+    },
+    {
+      "id": "article-20261019-yrut",
+      "label": "ですわ探訪｜01 　　「てよだわ言葉」とは何か",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "desuwa"
     }
   ]
 }
