@@ -4,7 +4,7 @@ title: 第四義　記号によって認識される「お嬢様」
 slug: article-20261008-dxlv
 status: published
 publishedAt: '2026-10-08T01:30:22.282Z'
-updatedAt: '2026-10-22T05:34:26.131Z'
+updatedAt: '2026-10-22T05:38:14.044Z'
 excerpt: ''
 categories:
   - definition
