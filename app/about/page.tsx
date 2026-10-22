@@ -58,9 +58,9 @@ export default function AboutPage() {
 身近な表現から歴史的な背景まで、さまざまな視点を結びながら、お嬢様という文化的な記号の意味を探究します。</p>
 
       <h2 style={sectionTitle}>運営者情報</h2>
-      <p style={todoText}>## 運営者情報
+      <p style={todoText}>
 
-**運営：PROJECT EUREKA**
+運営：PROJECT EUREKA
 
 お嬢様研究所は、PROJECT EUREKAが運営する、お嬢様という人物像を多角的に探究する研究サイトです。
 
