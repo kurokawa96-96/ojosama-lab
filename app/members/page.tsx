@@ -6,7 +6,7 @@ export const metadata = { title: "研究員のご紹介 | お嬢様研究所" };
 const MEMBERS = [
   {
     name: "K所長",
-    reading: "K所長",
+    reading: "",
     title: "運営者兼研究所所長",
     kind: "実在職員（人間）",
     description:
