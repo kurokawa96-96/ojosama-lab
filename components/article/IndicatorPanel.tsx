@@ -28,6 +28,7 @@ export default function IndicatorPanel({ items }: IndicatorPanelProps) {
           fontSize: "13px",
           letterSpacing: "0.1em",
           color: "var(--color-text-muted)",
+          whiteSpace: "pre-wrap",
           marginBottom: "16px",
         }}
       >
