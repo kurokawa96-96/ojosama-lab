@@ -37,6 +37,7 @@ export default function AmeliaVerdict({ verdict, indicators }: AmeliaVerdictProp
           fontSize: "19px",
           lineHeight: 1.8,
           color: "var(--color-text)",
+          whiteSpace: "pre-wrap",
         }}
       >
         {verdict.text}
