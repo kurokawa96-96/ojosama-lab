@@ -34,7 +34,7 @@ export default function AmeliaVerdict({ verdict, indicators }: AmeliaVerdictProp
       <p
         style={{
           fontFamily: "var(--font-mincho)",
-          fontSize: "19px",
+          fontSize: "17px",
           lineHeight: 1.8,
           color: "var(--color-text)",
           whiteSpace: "pre-wrap",
