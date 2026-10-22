@@ -104,6 +104,13 @@
       "type": "concept",
       "isMainNode": false,
       "parentNode": "thought"
+    },
+    {
+      "id": "article-20261022-nhxa",
+      "label": "ですわ探訪　04｜文学作品における女性語と人物造形",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "desuwa"
     }
   ]
 }
