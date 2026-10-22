@@ -1,20 +1,30 @@
 export const metadata = { title: "研究員のご紹介 | お嬢様研究所" };
 
-const STAFF_KIND = "イマジナリー職員（AI）";
-
 // 研究員を増やす・書き換える場合は、この一覧だけを編集してください
+// reading は、名前の下に小さく出る読みがな（不要なら "" にしてください）
+// kind は、肩書きの下に出る小さな札（実在かAIかを示します）
 const MEMBERS = [
   {
+    name: "K所長",
+    reading: "K所長",
+    title: "運営者兼研究所所長",
+    kind: "実在職員（人間）",
+    description:
+      "お嬢様研究所の運営者であり、所長でございます。研究所の方針と、公開する内容の最終的な判断は、所長が行います。",
+  },
+  {
     name: "Amelia Clarissa",
-    nameJa: "アメリア・クラリッサ",
+    reading: "アメリア・クラリッサ",
     title: "主席研究員",
+    kind: "イマジナリー職員（AI）",
     description:
       "お嬢様研究所の主席研究員でございます。各記事の末尾で、インジケーターと本論の内容を踏まえ、「お嬢様認定」の所見を述べております。",
   },
   {
     name: "Cordelia Rosalind",
-    nameJa: "コーデリア・ロザリンド",
+    reading: "コーデリア・ロザリンド",
     title: "研究助手及び施設管理担当員",
+    kind: "イマジナリー職員（AI）",
     description:
       "研究所の施設、すなわちこのサイトの整備や保守を、運営者とともに担当する職員でございます。方針や最終的な判断は運営者が行い、コーデリアはそのお手伝いをいたします。",
   },
@@ -44,7 +54,7 @@ export default function MembersPage() {
           marginBottom: "32px",
         }}
       >
-        当研究所の研究員は、いずれもAIによる「イマジナリー職員」でございます。
+        アメリアとコーデリアは、AIによる「イマジナリー職員」でございます。
       </p>
 
       <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
@@ -65,17 +75,19 @@ export default function MembersPage() {
             >
               {m.name}
             </p>
-            <p
-              style={{
-                fontFamily: "var(--font-mincho)",
-                fontSize: "12px",
-                letterSpacing: "0.08em",
-                color: "var(--color-text-muted)",
-                marginTop: "2px",
-              }}
-            >
-              {m.nameJa}
-            </p>
+            {m.reading && (
+              <p
+                style={{
+                  fontFamily: "var(--font-mincho)",
+                  fontSize: "12px",
+                  letterSpacing: "0.08em",
+                  color: "var(--color-text-muted)",
+                  marginTop: "2px",
+                }}
+              >
+                {m.reading}
+              </p>
+            )}
             <p
               style={{
                 fontFamily: "var(--font-mincho)",
@@ -100,7 +112,7 @@ export default function MembersPage() {
                 color: "var(--color-text-muted)",
               }}
             >
-              {STAFF_KIND}
+              {m.kind}
             </span>
             <p
               style={{
