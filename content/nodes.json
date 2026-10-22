@@ -97,6 +97,13 @@
       "type": "concept",
       "isMainNode": false,
       "parentNode": "desuwa"
+    },
+    {
+      "id": "article-20261020-z5nz",
+      "label": "有閑階級は、なぜ施すことができるのか",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "thought"
     }
   ]
 }
