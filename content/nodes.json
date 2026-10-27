@@ -125,6 +125,13 @@
       "type": "concept",
       "isMainNode": false,
       "parentNode": "culture"
+    },
+    {
+      "id": "article-20261027-irek",
+      "label": "01　教育の門が開く",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "culture"
     }
   ]
 }
