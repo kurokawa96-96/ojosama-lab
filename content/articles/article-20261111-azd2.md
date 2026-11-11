@@ -4,10 +4,10 @@ title: 02　女学生という新しい世界
 slug: article-20261111-azd2
 status: published
 publishedAt: '2026-11-11T05:57:44.108Z'
-updatedAt: '2026-11-11T05:57:44.108Z'
+updatedAt: '2026-11-11T06:28:10.056Z'
 excerpt: ''
 categories:
-  - history
+  - culture
 tags: []
 relatedNodes:
   - article-20261111-azd2
