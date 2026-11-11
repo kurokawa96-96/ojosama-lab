@@ -132,6 +132,13 @@
       "type": "concept",
       "isMainNode": false,
       "parentNode": "culture"
+    },
+    {
+      "id": "article-20261111-azd2",
+      "label": "02　女学生という新しい世界",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "history"
     }
   ]
 }
