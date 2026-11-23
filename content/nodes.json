@@ -146,6 +146,13 @@
       "type": "concept",
       "isMainNode": false,
       "parentNode": "history"
+    },
+    {
+      "id": "article-20261124-qedh",
+      "label": "03　女学生文化の形成",
+      "type": "concept",
+      "isMainNode": false,
+      "parentNode": "culture"
     }
   ]
 }
