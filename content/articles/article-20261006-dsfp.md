@@ -1,10 +1,10 @@
 ---
 id: article-20261006-dsfp
-title: 第三義：文化的プロトタイプとしてのお嬢様
+title: お嬢様定義・第三義：文化的プロトタイプとしてのお嬢様
 slug: article-20261006-dsfp
 status: published
 publishedAt: '2026-10-06T01:33:13.142Z'
-updatedAt: '2026-10-06T01:41:49.630Z'
+updatedAt: '2026-11-27T03:54:58.200Z'
 excerpt: ''
 categories:
   - definition
