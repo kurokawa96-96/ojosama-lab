@@ -1,0 +1,101 @@
+.section {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 8px 20px 48px;
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  /* スマートフォン：1列（2列にしたい場合は repeat(2, 1fr) に書き換え） */
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* タブレット：2列 */
+@media (min-width: 560px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* パソコン：3列 */
+@media (min-width: 960px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+.card {
+  display: block;
+  height: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 0.3s ease;
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: var(--color-accent);
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  /* 画像がまだ無いときの、控えめなグラデーション */
+  background: linear-gradient(135deg, var(--color-bg), var(--color-border));
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}
+
+.body {
+  padding: 16px 18px 18px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-mincho);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.description {
+  margin: 8px 0 0;
+  font-family: var(--font-mincho);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+}
+
+.count {
+  margin: 12px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .image {
+    transition: none;
+  }
+  .card:hover .image {
+    transform: none;
+  }
+}
